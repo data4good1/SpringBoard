@@ -63,7 +63,7 @@
 
 # #### 1.1. Importing Libraries
 
-# In[387]:
+# In[32]:
 
 
 # Let's import the pandas, numpy libraries as pd, and np respectively. 
@@ -77,7 +77,7 @@ import matplotlib.pyplot as plt
 # #### 1.2.  Loading the data
 # Your data comes from the [London Datastore](https://data.london.gov.uk/): a free, open-source data-sharing portal for London-oriented datasets. 
 
-# In[388]:
+# In[33]:
 
 
 # First, make a variable called url_LondonHousePrices, and assign it the following link, enclosed in quotation-marks as a string:
@@ -114,7 +114,7 @@ properties = pd.read_excel(url_LondonHousePrices, sheet_name='Average price', in
 # 
 # Think about your pandas functions for checking out a dataframe. 
 
-# In[389]:
+# In[34]:
 
 
 properties.head()
@@ -126,21 +126,21 @@ properties.head()
 # 
 # Don't be afraid to use StackOverflow for help  with this.
 
-# In[390]:
+# In[35]:
 
 
 properties = properties.transpose()
 properties.head()
 
 
-# In[391]:
+# In[36]:
 
 
 properties = properties.reset_index()
 properties.head()
 
 
-# In[392]:
+# In[37]:
 
 
 properties.columns = properties.iloc[0]
@@ -151,14 +151,14 @@ properties.head()
 # 
 # You might we have to **rename** a couple columns. How do you do this? The clue's pretty bold...
 
-# In[393]:
+# In[38]:
 
 
 properties = properties.drop(properties.index[0])
 properties.head()
 
 
-# In[394]:
+# In[39]:
 
 
 properties= properties.rename(columns = {'Unnamed: 0':'London_Borough', pd.NaT: 'ID'})
@@ -171,7 +171,7 @@ properties.head()
 # 
 # You might need to **melt** your DataFrame here. 
 
-# In[395]:
+# In[40]:
 
 
 properties_cleaned = properties.melt(id_vars= ['London_Borough', 'ID'])
@@ -179,7 +179,7 @@ properties_cleaned = properties.melt(id_vars= ['London_Borough', 'ID'])
 
 # Remember to make sure your column data types are all correct. Average prices, for example, should be floating point numbers... 
 
-# In[396]:
+# In[41]:
 
 
 print(properties_cleaned.head())
@@ -191,69 +191,69 @@ print(properties_cleaned.head())
 # 
 # Check out the contents of the London Borough column, and if you find null values, get rid of them however you see fit. 
 
-# In[397]:
+# In[42]:
 
 
 properties_cleaned.columns
 
 
-# In[398]:
+# In[43]:
 
 
 properties_cleaned = properties_cleaned.rename(columns = {0:'Month', 'value':'Average_Price'})
 print(properties_cleaned.head())
 
 
-# In[399]:
+# In[44]:
 
 
 properties_cleaned.dtypes
 
 
-# In[400]:
+# In[45]:
 
 
 properties_cleaned['Average_Price'] = pd.to_numeric(properties_cleaned['Average_Price'])
 
 
-# In[401]:
+# In[46]:
 
 
 properties_cleaned.dtypes
 
 
-# In[402]:
+# In[47]:
 
 
 properties_cleaned
 
 
-# In[403]:
+# In[48]:
 
 
 properties_cleaned['London_Borough'].unique()
 
 
-# In[404]:
+# In[49]:
 
 
 NaNFreeDF = properties_cleaned.dropna()
 NaNFreeDF.head(48)
 
 
-# In[405]:
+# In[50]:
 
 
 NaNFreeDF.count()
 
 
-# In[406]:
+# In[51]:
 
 
 NaNFreeDF['London_Borough'].unique()
 
 
-# In[407]:
+# In[52]:
 
 
 nonBoroughs = ['Inner London', 'Outer London', 
@@ -263,25 +263,25 @@ nonBoroughs = ['Inner London', 'Outer London',
               'SOUTH WEST', 'England']
 
 
-# In[408]:
+# In[53]:
 
 
-NaNFreeDF2 = NaNFreeDF2[~NaNFreeDF2.London_Borough.isin(nonBoroughs)]
+NaNFreeDF2 = NaNFreeDF[~NaNFreeDF.London_Borough.isin(nonBoroughs)]
 
 
-# In[409]:
+# In[54]:
 
 
 NaNFreeDF2.shape
 
 
-# In[410]:
+# In[55]:
 
 
 NaNFreeDF2.head()
 
 
-# In[411]:
+# In[56]:
 
 
 NaNFreeDF2.dtypes
@@ -291,7 +291,7 @@ NaNFreeDF2.dtypes
 # 
 # To visualize the data, why not subset on a particular London Borough? Maybe do a line plot of Month against Average Price?
 
-# In[412]:
+# In[57]:
 
 
 NaNFreeDF2['Year'] = NaNFreeDF2['Month'].apply(lambda x: x.year)
@@ -307,18 +307,25 @@ print(NaNFreeDF2.head())
 # 
 # Whether you go ahead with this is up to you. Just so long as you answer our initial brief: which boroughs of London have seen the greatest house price increase, on average, over the past two decades? 
 
-# In[413]:
+# In[58]:
 
 
 df = NaNFreeDF2.groupby(by=['London_Borough', 'Year']).mean()
 df.sample(10)
 
 
-# In[414]:
+# In[59]:
 
 
 df = df.reset_index()
 df.head()
+
+
+# In[63]:
+
+
+df.plot(x='Year', y='Average_Price')
+plt.show()
 
 
 # **3. Modeling**
@@ -340,23 +347,23 @@ df.head()
 # ***Hint***: This section should test the skills you acquired in:
 # - Python Data Science Toolbox - Part One, all modules
 
-# In[418]:
+# In[68]:
 
 
 def create_price_ratio(d):
-    y1998 = float(d['Average Price'][d['Year']==1998])
-    y2022= float(d['Average Price'][d['Year']==2022])
+    y1998 = float(d['Average_Price'][d['Year']==1998])
+    y2022= float(d['Average_Price'][d['Year']==2022])
     ratio = [y1998/y2022]
     return ratio
 
 
-# In[419]:
+# In[69]:
 
 
 final = {}
 
 
-# In[420]:
+# In[70]:
 
 
 
@@ -369,19 +376,19 @@ for b in df['London_Borough'].unique():
 print(final) 
 
 
-# In[421]:
+# In[71]:
 
 
 df_ratios=pd.DataFrame(final)
 
 
-# In[422]:
+# In[72]:
 
 
 df_ratios.head()
 
 
-# In[423]:
+# In[73]:
 
 
 df_ratios_T = df_ratios.T
@@ -389,21 +396,21 @@ df_ratios = df_ratios_T.reset_index()
 df_ratios.head()
 
 
-# In[424]:
+# In[74]:
 
 
 df_ratios.rename(columns={'index':'Borough', 0:'2022'}, inplace=True)
 df_ratios.head()
 
 
-# In[425]:
+# In[75]:
 
 
 top10= df_ratios.sort_values(by='2022',ascending=False).head(10)
 print(top10)
 
 
-# In[426]:
+# In[76]:
 
 
 ax = top10[['Borough','2022']].plot(kind='bar')
